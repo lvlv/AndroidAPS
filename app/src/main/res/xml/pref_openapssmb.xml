@@ -185,7 +185,7 @@
                 android:maxLines="20"
                 android:selectAllOnFocus="true"
                 android:title="@string/openapsama_max_daily_safety_multiplier"
-                validate:maxNumber="10"
+                validate:maxNumber="20"
                 validate:minNumber="1"
                 validate:testType="numericRange" />
 
