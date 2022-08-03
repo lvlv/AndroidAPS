@@ -55,6 +55,7 @@ import info.nightscout.shared.sharedPreferences.SP
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import io.socket.client.IO
+import io.socket.client.Manager
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONArray
@@ -62,6 +63,8 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.net.URISyntaxException
 import java.util.*
+import java.util.logging.Level
+import java.util.logging.Logger
 import javax.inject.Inject
 
 class NSClientService : DaggerService() {
@@ -244,6 +247,9 @@ class NSClientService : DaggerService() {
             rxBus.send(EventNSClientStatus("Disabled"))
         } else if (nsURL != "" && (buildHelper.isEngineeringMode() || nsURL.lowercase(Locale.getDefault()).startsWith("https://"))) {
             try {
+                Logger.getLogger(IO::class.java.name).level = Level.ALL
+                Logger.getLogger(Socket::class.java.name).level = Level.ALL
+                Logger.getLogger(Manager::class.java.name).level = Level.ALL
                 rxBus.send(EventNSClientStatus("Connecting ..."))
                 val opt = IO.Options()
                 opt.forceNew = true
@@ -255,8 +261,11 @@ class NSClientService : DaggerService() {
                     socket.on(Socket.EVENT_CONNECT_ERROR, onError)
                     socket.on(Socket.EVENT_CONNECT_TIMEOUT, onError)
                     socket.on(Socket.EVENT_PING, onPing)
+                    rxBus.send(EventNSClientNewLog("NSCLIENT", "nsURL $nsURL"))
+                    rxBus.send(EventNSClientNewLog("NSCLIENT", "opt $opt"))
                     rxBus.send(EventNSClientNewLog("NSCLIENT", "do connect"))
                     socket.connect()
+                    rxBus.send(EventNSClientNewLog("NSCLIENT", "connected"))
                     socket.on("dataUpdate", onDataUpdate)
                     socket.on("announcement", onAnnouncement)
                     socket.on("alarm", onAlarm)

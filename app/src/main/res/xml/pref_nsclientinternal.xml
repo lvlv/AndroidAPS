@@ -15,7 +15,7 @@
             android:key="@string/key_nsclientinternal_url"
             android:selectAllOnFocus="true"
             android:title="@string/nsclientinternal_url_title"
-            validate:testType="httpsUrl" />
+            validate:testType="webUrl" />
 
         <info.nightscout.androidaps.utils.textValidator.ValidatingEditTextPreference
             android:dialogMessage="@string/nsclientinternal_secret_dialogmessage"
